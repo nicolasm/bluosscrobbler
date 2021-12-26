@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="status" type="statusType"/>
+  <xs:complexType name="statusType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="album"/>
+      <xs:element type="xs:string" name="artist"/>
+      <xs:element type="xs:string" name="canMovePlayback"/>
+      <xs:element type="xs:string" name="canSeek"/>
+      <xs:element type="xs:string" name="cursor"/>
+      <xs:element type="xs:string" name="db"/>
+      <xs:element type="xs:string" name="fn"/>
+      <xs:element type="xs:string" name="image"/>
+      <xs:element type="xs:string" name="indexing"/>
+      <xs:element type="xs:string" name="mid"/>
+      <xs:element type="xs:string" name="mode"/>
+      <xs:element type="xs:string" name="mute"/>
+      <xs:element type="xs:string" name="name"/>
+      <xs:element type="xs:string" name="pid"/>
+      <xs:element type="xs:string" name="prid"/>
+      <xs:element type="xs:string" name="quality"/>
+      <xs:element type="xs:string" name="repeat"/>
+      <xs:element type="xs:string" name="service"/>
+      <xs:element type="xs:string" name="serviceIcon"/>
+      <xs:element type="xs:string" name="serviceName"/>
+      <xs:element type="xs:string" name="shuffle"/>
+      <xs:element type="xs:string" name="sid"/>
+      <xs:element type="xs:string" name="sleep"/>
+      <xs:element type="xs:string" name="song"/>
+      <xs:element type="xs:string" name="state"/>
+      <xs:element type="xs:string" name="syncStat"/>
+      <xs:element type="xs:string" name="title1"/>
+      <xs:element type="xs:string" name="title2"/>
+      <xs:element type="xs:string" name="title3"/>
+      <xs:element type="xs:string" name="totlen"/>
+      <xs:element type="xs:string" name="volume"/>
+      <xs:element type="xs:string" name="secs"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="etag"/>
+  </xs:complexType>
+</xs:schema>

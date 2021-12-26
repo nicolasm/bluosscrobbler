@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<status etag="4430eda462c9eb7030ce20624228c214">
+    <album>Don't Panic</album>
+    <artist>Izz</artist>
+    <canMovePlayback>true</canMovePlayback>
+    <canSeek>1</canSeek>
+    <cursor>139</cursor>
+    <db>0</db>
+    <fn>/var/mnt/PLANETEXPRESS-music/AudioRip/Izz/Dont Panic/05 Age of Stars.flac</fn>
+    <image>/Artwork?service=LocalMusic&amp;fn=%2Fvar%2Fmnt%2FPLANETEXPRESS-music%2FAudioRip%2FIzz%2FDont%20Panic%2F05%20Age%20of%20Stars.flac</image>
+    <indexing>0</indexing>
+    <mid>297</mid>
+    <mode>1</mode>
+    <mute>0</mute>
+    <name>Age of Stars</name>
+    <pid>493</pid>
+    <prid>0</prid>
+    <quality>cd</quality>
+    <repeat>2</repeat>
+    <service>LocalMusic</service>
+    <serviceIcon>/images/LibraryIcon.png</serviceIcon>
+    <serviceName>Library</serviceName>
+    <shuffle>0</shuffle>
+    <sid>5</sid>
+    <sleep></sleep>
+    <song>139</song>
+    <state>pause</state>
+    <syncStat>5</syncStat>
+    <title1>Age of Stars</title1>
+    <title2>Izz</title2>
+    <title3>Don't Panic</title3>
+    <totlen>540</totlen>
+    <volume>100</volume>
+    <secs>103</secs>
+</status>
