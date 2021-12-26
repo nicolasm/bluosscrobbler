@@ -1,2 +1,16 @@
 server:
   port: 18666
+
+application:
+  bluos:
+    host: 192.168.1.7
+    port: 11000
+    timeout: 100
+    excludedServices:
+      - Spotify
+  scrobblers:
+    lastfm:
+      enabled: true
+      apiKey: 0aeed2d83c2c786a53ef7529bb833863
+      sharedSecret: e5925cc6e70637f39b563e1cf32efade
+      sessionKey: kptNRkncMm-LgwgvNW_hsNJvFQ40xa-k

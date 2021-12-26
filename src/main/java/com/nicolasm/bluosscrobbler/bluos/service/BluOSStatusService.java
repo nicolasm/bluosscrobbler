@@ -1,5 +1,7 @@
 package com.nicolasm.bluosscrobbler.bluos.service;
 
+import com.google.common.collect.ImmutableMap;
+import com.nicolasm.bluosscrobbler.bluos.config.BluOSConfig;
 import com.nicolasm.service.bluosscrobbler.bluos.model.StatusType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,13 +11,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import static com.nicolasm.bluosscrobbler.bluos.model.PollingUrlParameters.etag;
+import static com.nicolasm.bluosscrobbler.bluos.model.PollingUrlParameters.timeout;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class BluOSStatusService {
-    private static final String STATUS_ENDPOINT = "http://192.168.1.7:11000/Status";
-    private static final String LONGPOLLING_ENDPOINT = "http://192.168.1.7:11000/Status?timeout=100&etag=%s";
-
+    private final BluOSConfig config;
     private final RestTemplate restTemplate = new RestTemplate();
 
     private boolean enabled = true;
@@ -54,17 +57,19 @@ public class BluOSStatusService {
     public StatusType getStatus() {
         try {
             ResponseEntity<StatusType> responseEntity =
-                    restTemplate.getForEntity(STATUS_ENDPOINT, StatusType.class);
+                    restTemplate.getForEntity(config.getStatusPollingEndpoint(), StatusType.class);
             return responseEntity.getBody();
         } catch (Exception e) {
             return null;
         }
     }
 
-    public StatusType getStatus(String etag) {
+    public StatusType getStatus(String etagIn) {
         try {
             ResponseEntity<StatusType> responseEntity =
-                    restTemplate.getForEntity(String.format(LONGPOLLING_ENDPOINT, etag), StatusType.class);
+                    restTemplate.getForEntity(config.getStatusLongPollingEndpoint(), StatusType.class,
+                            ImmutableMap.of(timeout, config.getTimeout(),
+                                    etag, etagIn));
             return responseEntity.getBody();
         } catch (Exception e) {
             return null;
