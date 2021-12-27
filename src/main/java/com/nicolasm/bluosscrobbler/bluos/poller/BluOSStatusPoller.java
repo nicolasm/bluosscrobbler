@@ -51,7 +51,9 @@ public class BluOSStatusPoller {
                     log.info("New played track: {} - {} - {}", status.getArtist(), status.getAlbum(), status.getName());
                     etag = status.getEtag();
 
-                    scrobblerCallbacks.forEach(ScrobblerCallback::notifyNowPlaying);
+                    scrobblerCallbacks.stream()
+                            .filter(ScrobblerCallback::isEnabled)
+                            .forEach(ScrobblerCallback::notifyNowPlaying);
                 }
             } while (status != null);
         }
