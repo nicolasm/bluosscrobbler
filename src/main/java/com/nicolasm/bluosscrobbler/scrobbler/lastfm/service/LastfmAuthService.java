@@ -1,10 +1,7 @@
 package com.nicolasm.bluosscrobbler.scrobbler.lastfm.service;
 
 import com.nicolasm.bluosscrobbler.scrobbler.lastfm.config.LastfmConfig;
-import com.nicolasm.bluosscrobbler.scrobbler.lastfm.model.LastfmAuthEndpoint;
-import com.nicolasm.bluosscrobbler.scrobbler.lastfm.model.LastfmAuthGetSessionResponse;
-import com.nicolasm.bluosscrobbler.scrobbler.lastfm.model.LastfmAuthTokenResponse;
-import com.nicolasm.bluosscrobbler.scrobbler.lastfm.model.LastfmRequestAuthUrlResponse;
+import com.nicolasm.bluosscrobbler.scrobbler.lastfm.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Map;
 
@@ -23,29 +21,43 @@ public class LastfmAuthService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public LastfmAuthTokenResponse getAuthToken() {
-        LastfmAuthEndpoint endpoint = LastfmAuthEndpoint.auth_getToken;
-        ResponseEntity<LastfmAuthTokenResponse> response =
-                restTemplate.getForEntity(endpoint.getEndpoint(config),
-                        LastfmAuthTokenResponse.class, endpoint.buildUrlVariables(config));
-        return response.getBody();
+        try {
+            LastfmEndpoint endpoint = LastfmEndpoint.auth_getToken;
+
+            ResponseEntity<LastfmAuthTokenResponse> response = restTemplate.getForEntity(endpoint.getEndpoint(config),
+                    LastfmAuthTokenResponse.class, endpoint.buildUrlVariables(config, null));
+            return response.getBody();
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
     }
 
     public LastfmRequestAuthUrlResponse requestAuth() {
-        LastfmAuthTokenResponse tokenResponse = getAuthToken();
-        LastfmAuthEndpoint endpoint = LastfmAuthEndpoint.request_auth;
+        try {
+            LastfmAuthTokenResponse tokenResponse = getAuthToken();
+            LastfmEndpoint endpoint = LastfmEndpoint.request_auth;
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(endpoint.getEndpoint(config));
-        Map<String, Object> urlVariables = endpoint.buildUrlVariables(config, tokenResponse.getToken());
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(endpoint.getEndpoint(config));
+            Map<String, String> urlVariables = endpoint.buildUrlVariables(config,
+                    LastfmUserParameters.builder().token(tokenResponse.getToken()).build());
 
-        URI uri = builder.buildAndExpand(urlVariables).toUri();
-        return new LastfmRequestAuthUrlResponse(uri.toString(), tokenResponse.getToken());
+            URI uri = builder.buildAndExpand(urlVariables).toUri();
+            return new LastfmRequestAuthUrlResponse(uri.toString(), tokenResponse.getToken());
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
     }
 
     public LastfmAuthGetSessionResponse getAuthSession(String tokenValue) {
-        LastfmAuthEndpoint endpoint = LastfmAuthEndpoint.auth_getSession;
-        ResponseEntity<LastfmAuthGetSessionResponse> response =
-                restTemplate.getForEntity(endpoint.getEndpoint(config),
-                        LastfmAuthGetSessionResponse.class, endpoint.buildUrlVariables(config, tokenValue));
-        return response.getBody();
+        try {
+            LastfmEndpoint endpoint = LastfmEndpoint.auth_getSession;
+            ResponseEntity<LastfmAuthGetSessionResponse> response =
+                    restTemplate.getForEntity(endpoint.getEndpoint(config),
+                            LastfmAuthGetSessionResponse.class, endpoint.buildUrlVariables(config,
+                                    LastfmUserParameters.builder().token(tokenValue).build()));
+            return response.getBody();
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
     }
 }

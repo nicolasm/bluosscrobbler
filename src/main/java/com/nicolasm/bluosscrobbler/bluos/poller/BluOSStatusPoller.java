@@ -37,7 +37,8 @@ public class BluOSStatusPoller {
         if (status != null) {
             log.info("Current played track: {} - {} - {}", status.getArtist(), status.getAlbum(), status.getName());
             if (status.getState().equals("play")) {
-                scrobblerCallbacks.forEach(ScrobblerCallback::notifyNowPlaying);
+                StatusType finalStatus = status;
+                scrobblerCallbacks.forEach(scrobblerCallback -> scrobblerCallback.notifyNowPlaying(finalStatus));
             }
 
             String etag = status.getEtag();
@@ -51,9 +52,10 @@ public class BluOSStatusPoller {
                     log.info("New played track: {} - {} - {}", status.getArtist(), status.getAlbum(), status.getName());
                     etag = status.getEtag();
 
+                    StatusType finalStatus1 = status;
                     scrobblerCallbacks.stream()
                             .filter(ScrobblerCallback::isEnabled)
-                            .forEach(ScrobblerCallback::notifyNowPlaying);
+                            .forEach(scrobblerCallback -> scrobblerCallback.notifyNowPlaying(finalStatus1));
                 }
             } while (status != null);
         }

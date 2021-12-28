@@ -1,6 +1,11 @@
 server:
   port: 18666
 
+logging:
+  level:
+    root: ERROR
+    org.springframework.web: DEBUG
+
 application:
   bluos:
     host: 192.168.1.7
@@ -15,4 +20,4 @@ application:
       enabled: true
       apiKey: 0aeed2d83c2c786a53ef7529bb833863
       sharedSecret: e5925cc6e70637f39b563e1cf32efade
-      sessionKey: S1hmcjrvs94ye5Ft46ZvYhJU6sRzdOHI
+      sessionKey: jPrakWsD2wUZCTO7UyP6rtDGxGDRjg7X

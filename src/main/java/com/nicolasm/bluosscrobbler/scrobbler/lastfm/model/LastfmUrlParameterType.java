@@ -1,10 +1,16 @@
 package com.nicolasm.bluosscrobbler.scrobbler.lastfm.model;
 
 @SuppressWarnings("squid:S00115")
-public enum LastfmUrlParameters {
+public enum LastfmUrlParameterType {
+    album,
     api_key,
     api_sig,
+    artist,
+    duration,
     format,
     method,
-    token
+    sk,
+    timestamp,
+    token,
+    track
 }
