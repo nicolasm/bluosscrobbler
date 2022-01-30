@@ -1,0 +1,1 @@
+drop table track_play;

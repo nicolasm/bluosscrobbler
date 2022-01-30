@@ -1,9 +1,12 @@
 package com.nicolasm.bluosscrobbler.scrobbler.lastfm.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nicolasm.bluosscrobbler.scrobbler.lastfm.config.LastfmConfig;
 import com.nicolasm.bluosscrobbler.scrobbler.lastfm.model.LastfmEndpoint;
 import com.nicolasm.bluosscrobbler.scrobbler.lastfm.model.LastfmUserParameters;
-import com.nicolasm.service.bluosscrobbler.bluos.model.StatusType;
+import com.nicolasm.bluosscrobbler.scrobbler.lastfm.model.LastfmUserResponse;
+import com.nicolasm.bluosscrobbler.scrobbler.model.ScrobblerTrackPlay;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -13,53 +16,50 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.support.RestGatewaySupport;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class LastfmUserService {
+public class LastfmUserService extends RestGatewaySupport {
     private final LastfmConfig config;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper mapper;
 
-    public void updateNowPlaying(StatusType status) {
+    public void updateNowPlaying(ScrobblerTrackPlay play) {
         try {
             LastfmEndpoint endpoint = LastfmEndpoint.track_updateNowPlaying;
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-            Map<String, String> urlVariables = endpoint.buildUrlVariables(config, LastfmUserParameters.builder()
-                    .artist(status.getArtist())
-                    .album(status.getAlbum())
-                    .track(status.getName())
-                    .duration(status.getTotlen())
-                    .build());
+            Map<String, String> urlVariables = endpoint.buildUrlVariables(config, LastfmUserParameters.fromPlay(play));
 
             postQuery(urlVariables, headers);
-        } catch (Exception e) {
-            log.error("An error occurred when trying to update now playing.", e);
+        } catch (HttpClientErrorException e) {
+            handleError(e);
         }
     }
 
-    public void scrobble(StatusType status) {
+    public void addPlayedTrack(ScrobblerTrackPlay play) {
         try {
             LastfmEndpoint endpoint = LastfmEndpoint.track_scrobble;
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-            Map<String, String> urlVariables = endpoint.buildUrlVariables(config, LastfmUserParameters.builder()
-                    .artist(status.getArtist())
-                    .album(status.getAlbum())
-                    .track(status.getName())
-                    .duration(status.getTotlen())
-                    .timestamp(String.valueOf(OffsetDateTime.now(ZoneId.of("Europe/Paris")).toEpochSecond()))
-                    .build());
+            Map<String, String> urlVariables = endpoint.buildUrlVariables(config, LastfmUserParameters.fromPlay(play));
 
             postQuery(urlVariables, headers);
-        } catch (Exception e) {
-            log.error("An error occurred when trying to update now playing.", e);
+        } catch (HttpClientErrorException e) {
+            handleError(e);
+        }
+    }
+
+    private void handleError(HttpClientErrorException e) {
+        try {
+            LastfmUserResponse response = mapper.readValue(e.getResponseBodyAsString(), LastfmUserResponse.class);
+            log.error("An response occurred when calling Last.fm API: message {}, response {}", response.getMessage(), response.getError());
+        } catch (JsonProcessingException ex) {
+            log.error("Could not deserialize Last.fm error: {}", e.getResponseBodyAsString());
         }
     }
 
@@ -68,7 +68,7 @@ public class LastfmUserService {
         urlVariables.forEach(map::add);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(config.getApiUrl(), request, String.class);
-        log.info("{}", response.getBody());
+        ResponseEntity<String> response = getRestTemplate().postForEntity(config.getApiUrl(), request, String.class);
+        log.trace("Last.fm call response: {}", response.getBody());
     }
 }

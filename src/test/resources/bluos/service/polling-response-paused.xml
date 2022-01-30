@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<status etag="d2cb2851df4db5623dc133d2fab453a4">
+    <album>Leaving California</album>
+    <artist>Jack O' the Clock</artist>
+    <canMovePlayback>true</canMovePlayback>
+    <canSeek>1</canSeek>
+    <cursor>286</cursor>
+    <db>-15.4</db>
+    <fn>/var/mnt/PLANETEXPRESS-music/AudioRip/Jack O' the Clock/Leaving California/03 The Butcher.flac</fn>
+    <image>/Artwork?service=LocalMusic&amp;fn=%2Fvar%2Fmnt%2FPLANETEXPRESS-music%2FAudioRip%2FJack%20O%27%20the%20Clock%2FLeaving%20California%2F03%20The%20Butcher.flac</image>
+    <indexing>0</indexing>
+    <mid>339</mid>
+    <mode>1</mode>
+    <mute>0</mute>
+    <name>The Butcher</name>
+    <pid>663</pid>
+    <prid>0</prid>
+    <quality>cd</quality>
+    <repeat>2</repeat>
+    <service>LocalMusic</service>
+    <serviceIcon>/images/LibraryIcon.png</serviceIcon>
+    <serviceName>Library</serviceName>
+    <shuffle>0</shuffle>
+    <sid>10</sid>
+    <sleep></sleep>
+    <song>282</song>
+    <state>pause</state>
+    <syncStat>33</syncStat>
+    <title1>The Butcher</title1>
+    <title2>Jack O' the Clock</title2>
+    <title3>Leaving California</title3>
+    <totlen>520</totlen>
+    <volume>65</volume>
+    <secs>298</secs>
+</status>

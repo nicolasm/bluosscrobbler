@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<status etag="27060794a383310ad274a17c2de0aa4a">
+    <album>Meow Meow Band</album>
+    <artist>Amanda Chaudhary</artist>
+    <canMovePlayback>true</canMovePlayback>
+    <cursor>215</cursor>
+    <db>-15.4</db>
+    <fn>/var/mnt/PLANETEXPRESS-music/Bandcamp/Amanda Chaudhary/Meow Meow Band/06 Donershtik.flac</fn>
+    <image>/Artwork?service=LocalMusic&amp;fn=%2Fvar%2Fmnt%2FPLANETEXPRESS-music%2FBandcamp%2FAmanda%20Chaudhary%2FMeow%20Meow%20Band%2F06%20Donershtik.flac</image>
+    <indexing>0</indexing>
+    <mid>339</mid>
+    <mode>1</mode>
+    <mute>0</mute>
+    <name>Donershtik</name>
+    <pid>655</pid>
+    <prid>0</prid>
+    <repeat>2</repeat>
+    <service>LocalMusic</service>
+    <serviceIcon>/images/LibraryIcon.png</serviceIcon>
+    <serviceName>Library</serviceName>
+    <shuffle>0</shuffle>
+    <sid>10</sid>
+    <sleep></sleep>
+    <song>215</song>
+    <state>stop</state>
+    <syncStat>33</syncStat>
+    <title1>Donershtik</title1>
+    <title2>Amanda Chaudhary</title2>
+    <title3>Meow Meow Band</title3>
+    <totlen>413</totlen>
+    <volume>65</volume>
+    <secs>0</secs>
+</status>

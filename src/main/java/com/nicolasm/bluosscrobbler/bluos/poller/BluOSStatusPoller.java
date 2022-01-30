@@ -1,63 +1,99 @@
 package com.nicolasm.bluosscrobbler.bluos.poller;
 
+import com.nicolasm.bluosscrobbler.bluos.model.BluOSStatus;
+import com.nicolasm.bluosscrobbler.bluos.model.TrackPlay;
 import com.nicolasm.bluosscrobbler.bluos.service.BluOSStatusService;
-import com.nicolasm.bluosscrobbler.scrobbler.ScrobblerCallback;
-import com.nicolasm.service.bluosscrobbler.bluos.model.StatusType;
+import com.nicolasm.bluosscrobbler.bluos.service.TrackPlayService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class BluOSStatusPoller {
     private final BluOSStatusService service;
-    private final List<ScrobblerCallback> scrobblerCallbacks;
+    private final TrackPlayService playService;
 
-    private boolean enabled = true;
+    public void poll() {
+        BluOSStatus status = service.getStatus();
+        if (status == null) {
+            return;
+        }
 
-    @Scheduled(fixedDelay = 30000L)
-    public void pollStatus() {
-        if (enabled) {
-            log.info("Start polling...");
-            enabled = false;
+        if (status.isPlaying()) {
+            updateNowPlaying(status);
+        }
 
-            poll();
+        String etag = status.getEtag();
+        do {
+            logPollStatus(status);
+            if (shouldBeScrobbled(status, etag)) {
+                playService.markAsToBeScrobbled();
+            }
 
-            enabled = true;
+            BluOSStatus previousStatus = status;
+            status = service.getStatus(status.computePollingTimeout(), status.getEtag());
+            if (status != null) {
+                if (shouldScrobble(status, etag)) {
+                    playService.scrobble();
+                }
+
+                etag = handlePlayingState(previousStatus, status, etag);
+            }
+        } while (status != null);
+    }
+
+    private void logPollStatus(BluOSStatus status) {
+        log.info("Poll status '{} - {} - {} - {} {}/{}' seconds...",
+                status.getArtist(),
+                status.getAlbum(),
+                status.getName(),
+                status.getState(),
+                status.getSecs(),
+                status.getTotlen());
+    }
+
+    private boolean shouldBeScrobbled(BluOSStatus status, String etag) {
+        return status.isSameTrackPlay(etag)
+                && !playService.isMarkedAsToBeScrobbled(etag)
+                && status.isHalfPlayed()
+                && status.isServiceEnabled();
+    }
+
+    private boolean shouldScrobble(BluOSStatus status, String etag) {
+        return status.hasStatusChanged(etag)
+                && status.isServiceEnabled();
+    }
+
+    private String handlePlayingState(BluOSStatus previous, BluOSStatus current, String etag) {
+        if (current.isNewTrackPlay(etag)) {
+            updateNowPlaying(current);
+            return current.getEtag();
+        }
+
+        if (current.isPlaying()
+                && previous.isPaused()) {
+            log.info("BluOS playing on.");
+            updateNowPlayingAfterPause(current);
+        } else if (current.isPaused()) {
+            log.info("BluOS playing paused.");
+        } else if (current.isStopped()) {
+            log.info("BluOS playing stopped.");
+            playService.deletePlaying();
+        }
+        return etag;
+    }
+
+    private void updateNowPlaying(BluOSStatus status) {
+        if (status.isServiceEnabled()) {
+            playService.updateNowPlaying(TrackPlay.fromStatus(status));
         }
     }
 
-    private void poll() {
-        StatusType status = service.getStatus();
-        if (status != null) {
-            log.info("Current played track: {} - {} - {}", status.getArtist(), status.getAlbum(), status.getName());
-            if (status.getState().equals("play")) {
-                StatusType finalStatus = status;
-                scrobblerCallbacks.forEach(scrobblerCallback -> scrobblerCallback.notifyNowPlaying(finalStatus));
-            }
-
-            String etag = status.getEtag();
-            do {
-                log.info("Poll status...");
-                status = service.getStatus(status.getEtag());
-
-                if ((status != null)
-                        && !StringUtils.equals(etag, status.getEtag())
-                        && (status.getState().equals("play"))) {
-                    log.info("New played track: {} - {} - {}", status.getArtist(), status.getAlbum(), status.getName());
-                    etag = status.getEtag();
-
-                    StatusType finalStatus1 = status;
-                    scrobblerCallbacks.stream()
-                            .filter(ScrobblerCallback::isEnabled)
-                            .forEach(scrobblerCallback -> scrobblerCallback.notifyNowPlaying(finalStatus1));
-                }
-            } while (status != null);
+    private void updateNowPlayingAfterPause(BluOSStatus status) {
+        if (status.isServiceEnabled()) {
+            playService.updateNowPlaying();
         }
     }
 }

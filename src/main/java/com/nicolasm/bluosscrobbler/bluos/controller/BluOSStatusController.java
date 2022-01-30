@@ -1,7 +1,7 @@
 package com.nicolasm.bluosscrobbler.bluos.controller;
 
+import com.nicolasm.bluosscrobbler.bluos.model.BluOSStatus;
 import com.nicolasm.bluosscrobbler.bluos.service.BluOSStatusService;
-import com.nicolasm.service.bluosscrobbler.bluos.model.StatusType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class BluOSStatusController {
     private final BluOSStatusService service;
 
     @GetMapping("/status")
-    public ResponseEntity<StatusType> getStatus() {
+    public ResponseEntity<BluOSStatus> getStatus() {
         return ResponseEntity.ok(service.getStatus());
     }
 }

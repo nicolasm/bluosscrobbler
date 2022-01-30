@@ -6,6 +6,7 @@ public enum LastfmUrlParameterType {
     api_key,
     api_sig,
     artist,
+    cb,
     duration,
     format,
     method,

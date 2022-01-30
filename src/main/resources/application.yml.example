@@ -1,0 +1,33 @@
+server:
+  port: 18666
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: ERROR
+
+spring:
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:file:./db/bluosscrobbler
+    username: bluosscrobbler
+    password: bluosscrobbler
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+
+application:
+  bluos:
+    host: 192.168.1.7
+    port: 11000
+    excludedServices:
+      - Spotify
+  scrobblers:
+    lastfm:
+      apiUrl: https://ws.audioscrobbler.com/2.0
+      authUrl: https://www.last.fm/api/auth
+      enabled: true
+      apiKey: 1904bd03896d943022f35994f3ca9ce4
+      sharedSecret: 296f5fba57a751c9599e7564c56f7dd9
+      sessionKey: your-session-key

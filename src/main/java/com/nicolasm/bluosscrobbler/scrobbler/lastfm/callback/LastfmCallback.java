@@ -1,17 +1,20 @@
 package com.nicolasm.bluosscrobbler.scrobbler.lastfm.callback;
 
-import com.nicolasm.bluosscrobbler.scrobbler.ScrobblerCallback;
+import com.nicolasm.bluosscrobbler.scrobbler.ScrobblingCallback;
 import com.nicolasm.bluosscrobbler.scrobbler.lastfm.config.LastfmConfig;
 import com.nicolasm.bluosscrobbler.scrobbler.lastfm.service.LastfmUserService;
-import com.nicolasm.service.bluosscrobbler.bluos.model.StatusType;
+import com.nicolasm.bluosscrobbler.scrobbler.model.Scrobbler;
+import com.nicolasm.bluosscrobbler.scrobbler.model.ScrobblerTrackPlay;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import static com.nicolasm.bluosscrobbler.scrobbler.model.Scrobbler.LASTFM;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class LastfmCallback implements ScrobblerCallback {
+public class LastfmCallback implements ScrobblingCallback {
     private final LastfmConfig config;
     private final LastfmUserService service;
 
@@ -21,13 +24,19 @@ public class LastfmCallback implements ScrobblerCallback {
     }
 
     @Override
-    public void notifyNowPlaying(StatusType status) {
-        log.info("Notify now playing to Last.fm");
-        service.updateNowPlaying(status);
+    public Scrobbler getType() {
+        return LASTFM;
     }
 
     @Override
-    public void scrobbleTrack() {
+    public void updateNowPlaying(ScrobblerTrackPlay play) {
+        log.info("Update now playing to Last.fm");
+        service.updateNowPlaying(play);
+    }
+
+    @Override
+    public void scrobble(ScrobblerTrackPlay play) {
         log.info("Scrobble track to Last.fm");
+        service.addPlayedTrack(play);
     }
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<status etag="24318b494b5d6820a369db76bf389c19">
+    <album>Temple of Switches IV</album>
+    <artist>Temple of Switches</artist>
+    <canMovePlayback>true</canMovePlayback>
+    <canSeek>1</canSeek>
+    <cursor>226</cursor>
+    <db>-15.4</db>
+    <fn>/var/mnt/PLANETEXPRESS-music/Bandcamp/Temple of Switches/Temple of Switches IV/01 Welcome.flac</fn>
+    <image>/Artwork?service=LocalMusic&amp;fn=%2Fvar%2Fmnt%2FPLANETEXPRESS-music%2FBandcamp%2FTemple%20of%20Switches%2FTemple%20of%20Switches%20IV%2F01%20Welcome.flac</image>
+    <indexing>0</indexing>
+    <mid>339</mid>
+    <mode>1</mode>
+    <mute>0</mute>
+    <name>Welcome</name>
+    <pid>656</pid>
+    <prid>0</prid>
+    <quality>hd</quality>
+    <repeat>2</repeat>
+    <service>LocalMusic</service>
+    <serviceIcon>/images/LibraryIcon.png</serviceIcon>
+    <serviceName>Library</serviceName>
+    <shuffle>0</shuffle>
+    <sid>10</sid>
+    <sleep></sleep>
+    <song>216</song>
+    <state>play</state>
+    <syncStat>33</syncStat>
+    <title1>Welcome</title1>
+    <title2>Temple of Switches</title2>
+    <title3>Temple of Switches IV</title3>
+    <totlen>200</totlen>
+    <volume>65</volume>
+    <secs>0</secs>
+</status>

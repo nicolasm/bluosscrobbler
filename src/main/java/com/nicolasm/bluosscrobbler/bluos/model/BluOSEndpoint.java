@@ -15,15 +15,15 @@ import static com.nicolasm.bluosscrobbler.bluos.model.PollingUrlParameters.timeo
 public enum BluOSEndpoint {
     STATUS_POLLING("Status") {
         @Override
-        public Map<String, Object> buildUrlVariables(BluOSConfig config, String etag) {
+        public Map<String, Object> buildUrlVariables(BluOSConfig config, long timeout, String etag) {
             return ImmutableMap.of();
         }
     },
     STATUS_LONG_POLLING(String.format("Status?%s={%s}&%s={%s}", timeout, timeout, etag, etag)) {
         @Override
-        public Map<String, Object> buildUrlVariables(BluOSConfig config, String etagIn) {
+        public Map<String, Object> buildUrlVariables(BluOSConfig config, long timeout, String etagIn) {
             Map<PollingUrlParameters, Object> variables = new EnumMap<>(PollingUrlParameters.class);
-            variables.put(timeout, config.getTimeout());
+            variables.put(PollingUrlParameters.timeout, timeout);
             variables.put(etag, etagIn);
             Map<String, Object> urlVariables = variables.entrySet().stream()
                     .collect(Collectors.toMap(e -> e.getKey().toString(), Map.Entry::getValue));
@@ -37,5 +37,5 @@ public enum BluOSEndpoint {
         return String.format("%s/%s", config.getBaseEndpoint(), endpoint);
     }
 
-    public abstract Map<String, Object> buildUrlVariables(BluOSConfig config, String etag);
+    public abstract Map<String, Object> buildUrlVariables(BluOSConfig config, long timeout, String etag);
 }
