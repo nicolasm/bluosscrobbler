@@ -104,6 +104,7 @@ public class TrackPlayService {
 
     @Transactional
     public void scrobble() {
+        repository.deleteScrobbled();
         callbacks.stream()
                 .filter(ScrobblingCallback::isEnabled)
                 .forEach(callback -> {

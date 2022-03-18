@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin("*")
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping(value = "/v1/bluossrobbler/bluos/")
+@RequestMapping(value = "/bluossrobbler/bluos/")
 public class BluOSStatusController {
     private final BluOSStatusService service;
 

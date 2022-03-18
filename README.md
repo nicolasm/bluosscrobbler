@@ -1,5 +1,6 @@
 # BluOSScrobbler
 Scrobble BluOS played tracks
+https://github.com/nicolasm/bluosscrobbler
 
 ## Description
 
@@ -16,7 +17,7 @@ But that solution has some drawbacks:
   especially if the Controller app is not detected anymore
   like it happened to me once.
 
-For all of those reasons, I decided to create my own solution.
+For all of those reasons, I decided to develop my own app.
 
 The app polls the playing status of your device by using the [BluOS API][1].
 
@@ -29,11 +30,7 @@ Once a new track is played, the previous track is scrobbled.
 
 ## Requirements
 
-Java 8
-
-## TODO
-
-* Cache scrobbles in case of Last.fm errors when scrobbling
+Java 11
 
 ## Setup
 
@@ -90,5 +87,12 @@ scrobblers:
 nohup java -jar bluosscrobbler-1.RELEASE.jar
 ````
 
-[0]: "https://github.com/simple-last-fm-scrobbler/sls"
-[1]: "https://bluos.net/wp-content/uploads/2020/06/Custom-Integration-API-v1.0.pdf"
+## License
+
+Copyright (c) 2021-2022, Nicolas Meier.
+
+[MIT][2]
+
+[0]: https://github.com/simple-last-fm-scrobbler/sls
+[1]: https://bluos.net/wp-content/uploads/2020/06/Custom-Integration-API-v1.0.pdf
+[2]: https://raw.githubusercontent.com/nicolasm/bluosscrobbler/main/LICENSE

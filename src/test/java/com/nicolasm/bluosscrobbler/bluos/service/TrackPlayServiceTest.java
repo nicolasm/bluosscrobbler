@@ -72,6 +72,7 @@ class TrackPlayServiceTest {
 
         service.scrobble();
 
+        verify(repository).deleteScrobbled();
         verify(callback).isEnabled();
         verify(repository, times(2)).save(any(TrackPlayEntity.class));
         verify(callback, times(2)).scrobble(any(ScrobblerTrackPlay.class));
