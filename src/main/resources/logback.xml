@@ -14,7 +14,7 @@
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
-            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+            <pattern>%date [%thread] %-5level %logger{35} - %msg %n</pattern>
         </encoder>
     </appender>
 
