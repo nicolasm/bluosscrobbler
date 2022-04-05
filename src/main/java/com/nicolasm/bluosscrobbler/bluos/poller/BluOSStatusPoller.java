@@ -57,7 +57,7 @@ public class BluOSStatusPoller {
     private boolean shouldBeScrobbled(BluOSStatus status, String etag) {
         return status.isSameTrackPlay(etag)
                 && !playService.isMarkedAsToBeScrobbled(etag)
-                && status.isHalfPlayed()
+                && status.shouldBeScrobbled()
                 && status.isServiceEnabled();
     }
 

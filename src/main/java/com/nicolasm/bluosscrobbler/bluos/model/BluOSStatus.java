@@ -14,16 +14,27 @@ import org.apache.commons.lang3.StringUtils;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class BluOSStatus {
+    private static final int FOUR_MINUTES_IN_SECONDS = 4 * 60;
+
     @Delegate
     @JsonIgnore
     private BluOSRawStatus status;
-    public boolean serviceEnabled;
+    private boolean serviceEnabled;
 
     public long getTotalLength() {
         return Long.parseLong(status.getTotlen());
     }
 
-    public boolean isHalfPlayed() {
+    public boolean shouldBeScrobbled() {
+        return hasBeenHalfPlayed()
+                || hasBeenPlayedForFourMinutes();
+    }
+
+    private boolean hasBeenPlayedForFourMinutes() {
+        return getPlayedLength() >= FOUR_MINUTES_IN_SECONDS;
+    }
+
+    private boolean hasBeenHalfPlayed() {
         return getPlayedLength() >= getHalfLength();
     }
 

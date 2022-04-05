@@ -57,7 +57,7 @@ class BluOSStatusServiceTest {
         assertThat(status.isPlaying()).isTrue();
         assertThat(status.isPaused()).isFalse();
         assertThat(status.isStopped()).isFalse();
-        assertThat(status.isHalfPlayed()).isFalse();
+        assertThat(status.shouldBeScrobbled()).isFalse();
         assertThat(status.isNewTrackPlay("old-etag")).isTrue();
         assertThat(status.getPlayedLength()).isZero();
     }
@@ -74,7 +74,7 @@ class BluOSStatusServiceTest {
         assertThat(status.isPlaying()).isFalse();
         assertThat(status.isPaused()).isTrue();
         assertThat(status.isStopped()).isFalse();
-        assertThat(status.isHalfPlayed()).isTrue();
+        assertThat(status.shouldBeScrobbled()).isTrue();
         assertThat(status.isNewTrackPlay("old-etag")).isFalse();
         assertThat(status.getPlayedLength()).isEqualTo(298L);
     }
@@ -91,7 +91,7 @@ class BluOSStatusServiceTest {
         assertThat(status.isPlaying()).isFalse();
         assertThat(status.isPaused()).isFalse();
         assertThat(status.isStopped()).isTrue();
-        assertThat(status.isHalfPlayed()).isFalse();
+        assertThat(status.shouldBeScrobbled()).isFalse();
         assertThat(status.isNewTrackPlay("old-etag")).isFalse();
         assertThat(status.getPlayedLength()).isZero();
     }
@@ -118,7 +118,7 @@ class BluOSStatusServiceTest {
         assertThat(status.isPlaying()).isTrue();
         assertThat(status.isPaused()).isFalse();
         assertThat(status.isStopped()).isFalse();
-        assertThat(status.isHalfPlayed()).isFalse();
+        assertThat(status.shouldBeScrobbled()).isFalse();
         assertThat(status.isNewTrackPlay(etag)).isFalse();
         assertThat(status.getPlayedLength()).isEqualTo(236L);
     }
