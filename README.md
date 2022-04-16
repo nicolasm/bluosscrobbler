@@ -25,7 +25,8 @@ The Last.fm now playing status is updated when:
 - playing a new track,
 - playing after pause.
 
-Once a track is half-played, it is marked as to be scrobbled.
+Once a track should be scrobbled (half-played or played for at least 4 minutes),
+it is marked as to be scrobbled.
 Once a new track is played, the previous track is scrobbled.
 
 ## Requirements

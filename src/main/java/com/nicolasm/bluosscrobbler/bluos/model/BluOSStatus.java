@@ -78,8 +78,9 @@ public class BluOSStatus {
     }
 
     public long computePollingTimeout() {
-        return isPlaying() && (getPlayedLength() < getHalfLength())
-                ? Math.min(getHalfLength() - getPlayedLength(), 100)
+        long scrobbleThreshold = Math.min(getHalfLength(), FOUR_MINUTES_IN_SECONDS);
+        return isPlaying() && (getPlayedLength() < scrobbleThreshold)
+                ? Math.min(scrobbleThreshold - getPlayedLength(), 100)
                 : 100;
     }
 }
