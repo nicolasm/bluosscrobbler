@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 @RequiredArgsConstructor
 public class BluOSStatus {
     private static final int FOUR_MINUTES_IN_SECONDS = 4 * 60;
+    private static final int DEFAULT_TIMEOUT = 100;
 
     @Delegate
     @JsonIgnore
@@ -78,9 +79,12 @@ public class BluOSStatus {
     }
 
     public long computePollingTimeout() {
-        long scrobbleThreshold = Math.min(getHalfLength(), FOUR_MINUTES_IN_SECONDS);
-        return isPlaying() && (getPlayedLength() < scrobbleThreshold)
-                ? Math.min(scrobbleThreshold - getPlayedLength(), 100)
-                : 100;
+        return isPlaying() && (getPlayedLength() < getScrobbleThreshold())
+                ? Math.min(getScrobbleThreshold() - getPlayedLength(), DEFAULT_TIMEOUT)
+                : DEFAULT_TIMEOUT;
+    }
+
+    private long getScrobbleThreshold() {
+        return Math.min(getHalfLength(), FOUR_MINUTES_IN_SECONDS);
     }
 }

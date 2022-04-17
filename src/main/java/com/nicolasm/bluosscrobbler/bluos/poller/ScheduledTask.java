@@ -19,9 +19,14 @@ public class ScheduledTask {
     @Scheduled(fixedDelay = 30000L)
     public void pollStatus() {
         if (enabled) {
-            disableScheduledTask();
-            poller.poll();
-            enableScheduledTask();
+            try {
+                disableScheduledTask();
+                poller.poll();
+            } catch (Exception e) {
+                log.error("An unexpected error occurred.", e);
+            } finally {
+                enableScheduledTask();
+            }
         }
     }
 
