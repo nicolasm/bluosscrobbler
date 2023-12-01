@@ -9,6 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 import org.apache.commons.lang3.StringUtils;
 
+import static com.nicolasm.service.bluosscrobbler.bluos.model.BluOSPlayingState.PAUSE;
+import static com.nicolasm.service.bluosscrobbler.bluos.model.BluOSPlayingState.PLAY;
+import static com.nicolasm.service.bluosscrobbler.bluos.model.BluOSPlayingState.STOP;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -67,15 +71,15 @@ public class BluOSStatus {
     }
 
     public boolean isPaused() {
-        return status.getState().equals("pause");
+        return status.getState() == PAUSE;
     }
 
     public boolean isPlaying() {
-        return status.getState().equals("play");
+        return status.getState() == PLAY;
     }
 
     public boolean isStopped() {
-        return status.getState().equals("stop");
+        return status.getState() == STOP;
     }
 
     public long computePollingTimeout() {

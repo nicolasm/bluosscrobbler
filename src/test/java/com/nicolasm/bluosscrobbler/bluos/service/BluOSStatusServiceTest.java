@@ -3,6 +3,7 @@ package com.nicolasm.bluosscrobbler.bluos.service;
 import com.google.common.collect.ImmutableList;
 import com.nicolasm.bluosscrobbler.bluos.config.BluOSConfig;
 import com.nicolasm.bluosscrobbler.bluos.model.BluOSStatus;
+import com.nicolasm.service.bluosscrobbler.bluos.model.BluOSPlayingState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -102,7 +103,8 @@ class BluOSStatusServiceTest {
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withServerError());
 
-        assertThat(service.getStatus()).isNull();
+//        assertThat(service.getStatus()).isNotNull();
+        assertThat(service.getStatus().getState()).isEqualTo(BluOSPlayingState.STOP);
     }
 
     @Test

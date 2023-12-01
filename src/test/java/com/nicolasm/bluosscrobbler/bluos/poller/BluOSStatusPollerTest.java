@@ -4,6 +4,7 @@ import com.nicolasm.bluosscrobbler.bluos.model.BluOSStatus;
 import com.nicolasm.bluosscrobbler.bluos.model.TrackPlay;
 import com.nicolasm.bluosscrobbler.bluos.service.BluOSStatusService;
 import com.nicolasm.bluosscrobbler.bluos.service.TrackPlayService;
+import com.nicolasm.service.bluosscrobbler.bluos.model.BluOSPlayingState;
 import com.nicolasm.service.bluosscrobbler.bluos.model.BluOSRawStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
+import static com.nicolasm.service.bluosscrobbler.bluos.model.BluOSPlayingState.PAUSE;
+import static com.nicolasm.service.bluosscrobbler.bluos.model.BluOSPlayingState.PLAY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
@@ -52,9 +55,9 @@ class BluOSStatusPollerTest {
 
     @Test
     void testPolling() {
-        mockStatusPoll("play", "0");
-        mockStatusLongPoll("play", "etag", "new-etag");
-        mockStatusLongPoll("play", "new-etag", null);
+        mockStatusPoll(PLAY, "0");
+        mockStatusLongPoll(PLAY, "etag", "new-etag");
+        mockStatusLongPoll(PLAY, "new-etag", null);
 
         when(playService.isMarkedAsToBeScrobbled("etag")).thenReturn(true);
 
@@ -70,7 +73,7 @@ class BluOSStatusPollerTest {
 
     @Test
     void testHalfPlayed() {
-        mockStatusPoll("play", "225");
+        mockStatusPoll(PLAY, "225");
 
         poller.poll();
         verify(statusService).getStatus();
@@ -80,16 +83,16 @@ class BluOSStatusPollerTest {
 
     @Test
     void testPausePlay() {
-        mockStatusPoll("pause", "10");
-        mockStatusLongPoll("play", "etag", "new-etag");
-        mockStatusLongPoll("play", "new-etag", null);
+        mockStatusPoll(PAUSE, "10");
+        mockStatusLongPoll(PLAY, "etag", "new-etag");
+        mockStatusLongPoll(PLAY, "new-etag", null);
 
         poller.poll();
         verify(statusService).getStatus();
         verify(playService).updateNowPlaying(any(TrackPlay.class));
     }
 
-    private void mockStatusPoll(String state, String secs) {
+    private void mockStatusPoll(BluOSPlayingState state, String secs) {
         BluOSRawStatus rawStatus = new BluOSRawStatus();
         rawStatus.setState(state);
         rawStatus.setSecs(secs);
@@ -101,7 +104,7 @@ class BluOSStatusPollerTest {
                 .build());
     }
 
-    private void mockStatusLongPoll(String state, String etagIn, String etagOut) {
+    private void mockStatusLongPoll(BluOSPlayingState state, String etagIn, String etagOut) {
         BluOSRawStatus rawStatus = new BluOSRawStatus();
         rawStatus.setState(state);
         rawStatus.setSecs("0");

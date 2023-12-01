@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.support.RestGatewaySupport;
 
+import static com.nicolasm.service.bluosscrobbler.bluos.model.BluOSPlayingState.STOP;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -26,7 +28,7 @@ public class BluOSStatusService extends RestGatewaySupport {
             return new BluOSStatus(raw, config.isServiceEnabled(raw));
         } catch (Exception e) {
             log.error("An error occurred when polling BluOS status.", e);
-            return null;
+            return stopped();
         }
     }
 
@@ -41,7 +43,13 @@ public class BluOSStatusService extends RestGatewaySupport {
             return new BluOSStatus(raw, config.isServiceEnabled(raw));
         } catch (Exception e) {
             log.error("An error occurred when long polling BluOS status with timeout {} and etag {}.", timeout, etagIn, e);
-            return null;
+            return stopped();
         }
+    }
+
+    private BluOSStatus stopped() {
+        BluOSRawStatus raw = new BluOSRawStatus();
+        raw.setState(STOP);
+        return new BluOSStatus(raw, config.isServiceEnabled(raw));
     }
 }
