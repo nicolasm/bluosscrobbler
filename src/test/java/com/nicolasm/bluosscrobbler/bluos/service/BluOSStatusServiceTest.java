@@ -103,8 +103,7 @@ class BluOSStatusServiceTest {
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withServerError());
 
-//        assertThat(service.getStatus()).isNotNull();
-        assertThat(service.getStatus().getState()).isEqualTo(BluOSPlayingState.STOP);
+        assertThat(service.getStatus()).isNull();
     }
 
     @Test

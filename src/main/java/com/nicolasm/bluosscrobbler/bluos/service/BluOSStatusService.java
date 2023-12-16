@@ -28,7 +28,7 @@ public class BluOSStatusService extends RestGatewaySupport {
             return new BluOSStatus(raw, config.isServiceEnabled(raw));
         } catch (Exception e) {
             log.error("An error occurred when polling BluOS status.", e);
-            return stopped();
+            return null;
         }
     }
 
@@ -43,7 +43,7 @@ public class BluOSStatusService extends RestGatewaySupport {
             return new BluOSStatus(raw, config.isServiceEnabled(raw));
         } catch (Exception e) {
             log.error("An error occurred when long polling BluOS status with timeout {} and etag {}.", timeout, etagIn, e);
-            return stopped();
+            return null;
         }
     }
 
