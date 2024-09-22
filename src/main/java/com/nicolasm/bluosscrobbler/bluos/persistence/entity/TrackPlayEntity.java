@@ -51,8 +51,8 @@ public class TrackPlayEntity {
     @Enumerated(EnumType.STRING)
     private ScrobbleStatus lastfmScrobbleStatus;
 
-    @Column(name = "etag")
-    private String etag;
+    @Column(name = "md5_checksum")
+    private String md5Checksum;
 
     @Column(name = "created_at")
     private OffsetDateTime createdAt;

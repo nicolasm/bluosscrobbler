@@ -13,9 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import static com.nicolasm.bluosscrobbler.bluos.model.ScrobbleStatus.DISABLED;
 import static com.nicolasm.bluosscrobbler.bluos.model.ScrobbleStatus.SCROBBLED;
 import static com.nicolasm.bluosscrobbler.bluos.model.ScrobbleStatus.TO_BE_SCROBBLED;
 import static com.nicolasm.bluosscrobbler.bluos.model.TrackPlayStatus.PLAYED;
@@ -32,19 +30,21 @@ public class TrackPlayService {
     public void updateNowPlaying(TrackPlay play) {
         log.info("New playing track is '{} - {} - {}'", play.getArtist(), play.getAlbum(), play.getTrack());
 
-        TrackPlayEntity playing = repository.findPlaying();
+        TrackPlayEntity playing = repository.findLastfmPlaying();
         if (playing == null) {
             playing = TrackPlayEntity.builder().playStatus(PLAYING).build();
+        } else if (!playing.getMd5Checksum().equals(play.getMd5Checksum())
+                && playing.getLastfmScrobbleStatus() == SCROBBLED) {
+            playing.setLastfmScrobbleStatus(null);
         }
         playing.setArtist(play.getArtist());
         playing.setAlbum(play.getAlbum());
         playing.setTrack(play.getTrack());
         playing.setDuration(play.getDuration());
-        playing.setEtag(play.getEtag());
         playing.setTimestamp(play.getTimestamp());
-        OffsetDateTime now = OffsetDateTime.now();
-        playing.setCreatedAt(now);
-        playing.setUpdatedAt(now);
+        playing.setMd5Checksum(play.getMd5Checksum());
+        playing.setCreatedAt(OffsetDateTime.now());
+        playing.setUpdatedAt(OffsetDateTime.now());
         repository.save(playing);
 
         callbacks.stream()
@@ -58,75 +58,61 @@ public class TrackPlayService {
                         .build()));
     }
 
-    public void updateNowPlaying() {
-        callbacks.stream()
-                .filter(ScrobblingCallback::isEnabled)
-                .forEach(callback -> {
-                    TrackPlayEntity playing = repository.findPlaying();
-                    callback.updateNowPlaying(ScrobblerTrackPlay.builder()
-                            .artist(playing.getArtist())
-                            .album(playing.getAlbum())
-                            .track(playing.getTrack())
-                            .duration(playing.getDuration())
-                            .timestamp(playing.getTimestamp())
-                            .build());
-                });
+    @Transactional
+    public void markAsPlayed(String md5Checksum) {
+        TrackPlayEntity play = repository.findLastfmByMd5Checksum(md5Checksum);
+        if (play != null) {
+            play.setPlayStatus(PLAYED);
+            repository.save(play);
+        }
     }
 
     @Transactional
-    public void markAsToBeScrobbled() {
-        Optional.ofNullable(repository.findPlaying()).ifPresent(p -> {
-            log.info("Mark current track '{} - {} - {}' as to be scrobbled.",
-                    p.getArtist(), p.getAlbum(), p.getTrack());
+    public void scrobble(TrackPlay play) {
+        TrackPlayEntity entity = repository.findLastfmByMd5Checksum(play.getMd5Checksum());
 
-            OffsetDateTime now = OffsetDateTime.now();
-            TrackPlayEntity played = TrackPlayEntity.builder()
+            callbacks.stream()
+                    .filter(ScrobblingCallback::isEnabled)
+                    .forEach(callback -> {
+                        if (callback.getType() == Scrobbler.LASTFM) {
+                            if (entity.getLastfmScrobbleStatus() == null) {
+                                scrobbleCurrent(play, callback, entity);
+                            }
+
+                            repository.deleteScrobbled();
+                            scrobbleToBeScrobbled(callback);
+                        }
+                    });
+
+    }
+
+    private void scrobbleCurrent(TrackPlay play, ScrobblingCallback callback, TrackPlayEntity entity) {
+        if (callback.scrobble(ScrobblerTrackPlay.builder()
+                .artist(play.getArtist())
+                .album(play.getAlbum())
+                .track(play.getTrack())
+                .duration(play.getDuration())
+                .timestamp(play.getTimestamp())
+                .build())) {
+            entity.setLastfmScrobbleStatus(SCROBBLED);
+        } else {
+            entity.setLastfmScrobbleStatus(TO_BE_SCROBBLED);
+        }
+        repository.save(entity);
+    }
+
+    private void scrobbleToBeScrobbled(ScrobblingCallback callback) {
+        repository.findLastfmToBeScrobbled().forEach(p -> {
+            if (callback.scrobble(ScrobblerTrackPlay.builder()
                     .artist(p.getArtist())
                     .album(p.getAlbum())
                     .track(p.getTrack())
                     .duration(p.getDuration())
                     .timestamp(p.getTimestamp())
-                    .playStatus(PLAYED)
-                    .etag(p.getEtag())
-                    .createdAt(now)
-                    .updatedAt(now)
-                    .build();
-            callbacks.forEach(callback ->
-                    played.setScrobblerStatus(callback.getType(),
-                            callback.isEnabled() ? TO_BE_SCROBBLED : DISABLED));
-            repository.save(played);
+                    .build())) {
+                p.setLastfmScrobbleStatus(SCROBBLED);
+            }
+            repository.save(p);
         });
-    }
-
-    public boolean isMarkedAsToBeScrobbled(String etag) {
-        return repository.findPlayedByEtag(etag) != null;
-    }
-
-    @Transactional
-    public void scrobble() {
-        repository.deleteScrobbled();
-        callbacks.stream()
-                .filter(ScrobblingCallback::isEnabled)
-                .forEach(callback -> {
-                    if (callback.getType() == Scrobbler.LASTFM) {
-                        repository.findLastfmToBeScrobbled().forEach(play -> {
-                            callback.scrobble(ScrobblerTrackPlay.builder()
-                                    .artist(play.getArtist())
-                                    .album(play.getAlbum())
-                                    .track(play.getTrack())
-                                    .duration(play.getDuration())
-                                    .timestamp(play.getTimestamp())
-                                    .build());
-                            play.setLastfmScrobbleStatus(SCROBBLED);
-                            repository.save(play);
-                        });
-                    }
-                });
-    }
-
-    @Transactional
-    public void deletePlaying() {
-        TrackPlayEntity playing = repository.findPlaying();
-        Optional.ofNullable(playing).ifPresent(repository::delete);
     }
 }

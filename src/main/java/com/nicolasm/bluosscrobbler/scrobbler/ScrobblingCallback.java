@@ -10,5 +10,5 @@ public interface ScrobblingCallback {
 
     void updateNowPlaying(ScrobblerTrackPlay play);
 
-    void scrobble(ScrobblerTrackPlay play);
+    boolean scrobble(ScrobblerTrackPlay play);
 }

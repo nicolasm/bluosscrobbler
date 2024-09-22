@@ -20,7 +20,7 @@ public class TrackPlay {
     private String track;
     private String duration;
     private long timestamp;
-    private String etag;
+    private String md5Checksum;
 
     public static TrackPlay fromStatus(BluOSStatus status) {
         return TrackPlay.builder()
@@ -29,7 +29,7 @@ public class TrackPlay {
                 .track(status.getName())
                 .duration(status.getTotlen())
                 .timestamp(OffsetDateTime.now(ZONE_ID).toEpochSecond() - Long.parseLong(status.getSecs()))
-                .etag(status.getEtag())
+                .md5Checksum(status.md5Checksum())
                 .build();
     }
 }

@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import static com.nicolasm.service.bluosscrobbler.bluos.model.BluOSPlayingState.PAUSE;
 import static com.nicolasm.service.bluosscrobbler.bluos.model.BluOSPlayingState.PLAY;
@@ -25,6 +25,15 @@ public class BluOSStatus {
     @JsonIgnore
     private BluOSRawStatus status;
     private boolean serviceEnabled;
+
+    public String md5Checksum() {
+        String buffer = status.getPid()
+                + status.getSong()
+                + status.getArtist()
+                + status.getAlbum()
+                + status.getName();
+        return DigestUtils.md5Hex(buffer.getBytes());
+    }
 
     public long getTotalLength() {
         return Long.parseLong(status.getTotlen());
@@ -55,19 +64,8 @@ public class BluOSStatus {
         return getTotalLength() + getPlayedLength();
     }
 
-    public boolean hasStatusChanged(String previousEtag) {
-        return isNewTrackPlay(previousEtag)
-                || isStopped();
-    }
-
-    public boolean isNewTrackPlay(String previousEtag) {
-        return !StringUtils.equals(previousEtag, status.getEtag())
-                && isPlaying();
-    }
-
-    public boolean isSameTrackPlay(String previousEtag) {
-        return StringUtils.equals(previousEtag, status.getEtag())
-                && isPlaying();
+    public boolean isNewTrackPlay(BluOSStatus previous) {
+        return !this.md5Checksum().equals(previous.md5Checksum());
     }
 
     public boolean isPaused() {

@@ -35,8 +35,8 @@ public class LastfmCallback implements ScrobblingCallback {
     }
 
     @Override
-    public void scrobble(ScrobblerTrackPlay play) {
+    public boolean scrobble(ScrobblerTrackPlay play) {
         log.info("Scrobble track to Last.fm");
-        service.addPlayedTrack(play);
+        return service.addPlayedTrack(play);
     }
 }

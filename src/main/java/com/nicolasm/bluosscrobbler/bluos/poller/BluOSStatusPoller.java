@@ -25,21 +25,23 @@ public class BluOSStatusPoller {
             updateNowPlaying(status);
         }
 
-        String etag = status.getEtag();
         do {
             logPollStatus(status);
-            if (shouldBeScrobbled(status, etag)) {
-                playService.markAsToBeScrobbled();
-            }
 
-            BluOSStatus previousStatus = status;
+            BluOSStatus previous = status;
             status = service.getStatus(status.computePollingTimeout(), status.getEtag());
             if (status != null) {
-                if (shouldScrobble(status, etag)) {
-                    playService.scrobble();
+                handlePlayingState(previous, status);
+
+                if (status.shouldBeScrobbled()) {
+                    playService.scrobble(TrackPlay.fromStatus(status));
                 }
 
-                etag = handlePlayingState(previousStatus, status, etag);
+                if (status.isNewTrackPlay(previous)) {
+                    playService.markAsPlayed(previous.md5Checksum());
+                    updateNowPlaying(status);
+                }
+
             }
         } while (status != null);
     }
@@ -52,48 +54,24 @@ public class BluOSStatusPoller {
                 status.getState(),
                 status.getSecs(),
                 status.getTotlen());
+        log.info("md5 checksum {}", status.md5Checksum());
     }
 
-    private boolean shouldBeScrobbled(BluOSStatus status, String etag) {
-        return status.isSameTrackPlay(etag)
-                && !playService.isMarkedAsToBeScrobbled(etag)
-                && status.shouldBeScrobbled()
-                && status.isServiceEnabled();
-    }
-
-    private boolean shouldScrobble(BluOSStatus status, String etag) {
-        return status.hasStatusChanged(etag)
-                && status.isServiceEnabled();
-    }
-
-    private String handlePlayingState(BluOSStatus previous, BluOSStatus current, String etag) {
-        if (current.isNewTrackPlay(etag)) {
-            updateNowPlaying(current);
-            return current.getEtag();
-        }
-
+    private void handlePlayingState(BluOSStatus previous, BluOSStatus current) {
         if (current.isPlaying()
                 && previous.isPaused()) {
             log.info("BluOS playing on.");
-            updateNowPlayingAfterPause(current);
+            updateNowPlaying(current);
         } else if (current.isPaused()) {
             log.info("BluOS playing paused.");
         } else if (current.isStopped()) {
             log.info("BluOS playing stopped.");
-            playService.deletePlaying();
         }
-        return etag;
     }
 
     private void updateNowPlaying(BluOSStatus status) {
         if (status.isServiceEnabled()) {
             playService.updateNowPlaying(TrackPlay.fromStatus(status));
-        }
-    }
-
-    private void updateNowPlayingAfterPause(BluOSStatus status) {
-        if (status.isServiceEnabled()) {
-            playService.updateNowPlaying();
         }
     }
 }

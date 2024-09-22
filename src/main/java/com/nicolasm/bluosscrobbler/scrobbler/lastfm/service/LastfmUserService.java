@@ -41,7 +41,7 @@ public class LastfmUserService extends RestGatewaySupport {
         }
     }
 
-    public void addPlayedTrack(ScrobblerTrackPlay play) {
+    public boolean addPlayedTrack(ScrobblerTrackPlay play) {
         try {
             LastfmEndpoint endpoint = LastfmEndpoint.track_scrobble;
             HttpHeaders headers = new HttpHeaders();
@@ -49,8 +49,10 @@ public class LastfmUserService extends RestGatewaySupport {
             Map<String, String> urlVariables = endpoint.buildUrlVariables(config, LastfmUserParameters.fromPlay(play));
 
             postQuery(urlVariables, headers);
+            return true;
         } catch (HttpClientErrorException e) {
             handleError(e);
+            return false;
         }
     }
 
