@@ -35,10 +35,6 @@ public class BluOSStatus {
         return DigestUtils.md5Hex(buffer.getBytes());
     }
 
-    public long getTotalLength() {
-        return Long.parseLong(status.getTotlen());
-    }
-
     public boolean shouldBeScrobbled() {
         return hasBeenHalfPlayed()
                 || hasBeenPlayedForFourMinutes();
@@ -56,6 +52,12 @@ public class BluOSStatus {
         return getTotalLength() / 2;
     }
 
+    public long getTotalLength() {
+        return (status.getTotlen() != null)
+                ? Long.parseLong(status.getTotlen())
+                : Long.MAX_VALUE;
+    }
+
     public long getPlayedLength() {
         return Long.parseLong(status.getSecs());
     }
@@ -65,7 +67,9 @@ public class BluOSStatus {
     }
 
     public boolean isNewTrackPlay(BluOSStatus previous) {
-        return !this.md5Checksum().equals(previous.md5Checksum());
+        return (getArtist() != null)
+                && (getName() != null)
+                && !this.md5Checksum().equals(previous.md5Checksum());
     }
 
     public boolean isPaused() {
