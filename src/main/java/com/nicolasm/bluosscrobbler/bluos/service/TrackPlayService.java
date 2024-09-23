@@ -36,12 +36,16 @@ public class TrackPlayService {
         } else if (!playing.getMd5Checksum().equals(play.getMd5Checksum())
                 && playing.getLastfmScrobbleStatus() == SCROBBLED) {
             playing.setLastfmScrobbleStatus(null);
+            playing.setTimestamp(play.getTimestamp());
         }
+        if (playing.getTimestamp() == 0L) {
+            playing.setTimestamp(play.getTimestamp());
+        }
+
         playing.setArtist(play.getArtist());
         playing.setAlbum(play.getAlbum());
         playing.setTrack(play.getTrack());
         playing.setDuration(play.getDuration());
-        playing.setTimestamp(play.getTimestamp());
         playing.setMd5Checksum(play.getMd5Checksum());
         playing.setCreatedAt(OffsetDateTime.now());
         playing.setUpdatedAt(OffsetDateTime.now());

@@ -44,13 +44,21 @@ The `/Playlist` endpoint pointed to the right direction:
 > track id is same as `<song>` in `/Status` response.
 
 The poller now relies on a MD5 hexadecimal checksum of the concatenation of the fields:
-- playlist `id`,
+- ~~playlist `id`,~~
 - song `id`,
 - artist name,
 - album name
 - and track name
 
 to determine if the current `/Status` response refers to a new track play.
+
+The playlist `id` changes as soon as new songs are added to the play queue.
+
+TODO:
+- There may be a few issues when using random multiples times while adding new songs to the queue
+  after a song has been scrobbled: song being scrobbled twice maybe because its position in the queue has changed...
+- Handle the one song on repeat case: the only thing changing is the `etag` value. I tried something,
+  but it didn't work out as I expected.
 
 ## Requirements
 

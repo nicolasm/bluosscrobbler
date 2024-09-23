@@ -27,8 +27,7 @@ public class BluOSStatus {
     private boolean serviceEnabled;
 
     public String md5Checksum() {
-        String buffer = status.getPid()
-                + status.getSong()
+        String buffer = status.getSong()
                 + status.getArtist()
                 + status.getAlbum()
                 + status.getName();
