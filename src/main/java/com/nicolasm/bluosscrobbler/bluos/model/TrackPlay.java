@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -12,6 +13,7 @@ import java.time.ZoneId;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
+@ToString
 public class TrackPlay {
     private static final ZoneId ZONE_ID = ZoneId.of("Europe/Paris");
 

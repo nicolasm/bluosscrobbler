@@ -74,7 +74,7 @@ public class TrackPlayService {
     @Transactional
     public void scrobble(TrackPlay play) {
         TrackPlayEntity entity = repository.findLastfmByMd5Checksum(play.getMd5Checksum());
-
+        if (entity != null) {
             callbacks.stream()
                     .filter(ScrobblingCallback::isEnabled)
                     .forEach(callback -> {
@@ -87,7 +87,9 @@ public class TrackPlayService {
                             scrobbleToBeScrobbled(callback);
                         }
                     });
-
+        } else {
+            log.error("Could not scrobble: no entity corresponding to {}", play);
+        }
     }
 
     private void scrobbleCurrent(TrackPlay play, ScrobblingCallback callback, TrackPlayEntity entity) {
